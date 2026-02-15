@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Harvard Concentration Double-Major: Closest Pairs</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #fff; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    const data = [
+      { conc: "Physics", pair: "Astrophysics", min: 13, div: "STEM", conf: "verified" },
+      { conc: "Astrophysics", pair: "Physics", min: 13, div: "STEM", conf: "verified" },
+      { conc: "Chemistry", pair: "Physics", min: 14, div: "STEM", conf: "verified" },
+      { conc: "Chemistry and Physics", pair: "Physics", min: 14, div: "STEM", conf: "estimated" },
+      { conc: "Molecular and Cellular Biology", pair: "Neuroscience", min: 15, div: "STEM", conf: "verified" },
+      { conc: "Neuroscience", pair: "MCB", min: 15, div: "STEM", conf: "verified" },
+      { conc: "Chemical and Physical Biology", pair: "MCB", min: 16, div: "STEM", conf: "verified" },
+      { conc: "Human Dev. and Regen. Biology", pair: "MCB", min: 16, div: "STEM", conf: "verified" },
+      { conc: "Applied Mathematics", pair: "Statistics", min: 17, div: "STEM", conf: "estimated" },
+      { conc: "Biomedical Engineering", pair: "Engineering Sciences", min: 17, div: "STEM", conf: "estimated" },
+      { conc: "Earth and Planetary Sciences", pair: "Physics", min: 17, div: "STEM", conf: "estimated" },
+      { conc: "Integrative Biology", pair: "Neuroscience", min: 17, div: "STEM", conf: "estimated" },
+      { conc: "Mathematics", pair: "Applied Mathematics", min: 17, div: "STEM", conf: "estimated" },
+      { conc: "Statistics", pair: "Applied Mathematics", min: 17, div: "STEM", conf: "estimated" },
+      { conc: "African and African American Studies", pair: "History", min: 18, div: "Humanities/SS", conf: "estimated" },
+      { conc: "Classics", pair: "History", min: 18, div: "Humanities", conf: "estimated" },
+      { conc: "Computer Science", pair: "Applied Mathematics", min: 18, div: "STEM", conf: "estimated" },
+      { conc: "East Asian Studies", pair: "History", min: 18, div: "Humanities", conf: "estimated" },
+      { conc: "History", pair: "History & Literature", min: 18, div: "Humanities", conf: "estimated" },
+      { conc: "History & Literature", pair: "History", min: 18, div: "Humanities", conf: "estimated" },
+      { conc: "History and Science", pair: "History", min: 18, div: "Humanities", conf: "estimated" },
+      { conc: "History of Art and Architecture", pair: "History", min: 18, div: "Humanities", conf: "estimated" },
+      { conc: "Human Biology, Behavior, Evol.", pair: "Neuroscience", min: 18, div: "STEM", conf: "estimated" },
+      { conc: "Near Eastern Lang. and Civ.", pair: "History", min: 18, div: "Humanities", conf: "estimated" },
+      { conc: "Psychology", pair: "Neuroscience", min: 18, div: "STEM", conf: "estimated" },
+      { conc: "Economics", pair: "Social Studies", min: 19, div: "Social Sci", conf: "estimated" },
+      { conc: "English", pair: "History & Literature", min: 19, div: "Humanities", conf: "estimated" },
+      { conc: "Government", pair: "Social Studies", min: 19, div: "Social Sci", conf: "estimated" },
+      { conc: "Linguistics", pair: "Philosophy", min: 19, div: "Humanities", conf: "estimated" },
+      { conc: "Philosophy", pair: "Linguistics", min: 19, div: "Humanities", conf: "estimated" },
+      { conc: "Social Studies", pair: "Government", min: 19, div: "Social Sci", conf: "estimated" },
+      { conc: "Anthropology", pair: "Social Studies", min: 20, div: "Social Sci", conf: "estimated" },
+      { conc: "Art, Film, and Visual Studies", pair: "Hist. of Art and Arch.", min: 20, div: "Humanities", conf: "estimated" },
+      { conc: "Comparative Study of Religion", pair: "South Asian Studies", min: 20, div: "Humanities", conf: "estimated" },
+      { conc: "Env. Science and Public Policy", pair: "Government", min: 20, div: "Social Sci", conf: "estimated" },
+      { conc: "Slavic Languages and Lit.", pair: "Comparative Literature", min: 20, div: "Humanities", conf: "estimated" },
+      { conc: "Sociology", pair: "Social Studies", min: 20, div: "Social Sci", conf: "estimated" },
+      { conc: "South Asian Studies", pair: "Comp. Study of Religion", min: 20, div: "Humanities", conf: "estimated" },
+      { conc: "Comparative Literature", pair: "English", min: 21, div: "Humanities", conf: "estimated" },
+      { conc: "Germanic Languages and Lit.", pair: "Comparative Literature", min: 21, div: "Humanities", conf: "estimated" },
+      { conc: "Romance Languages and Lit.", pair: "Comparative Literature", min: 21, div: "Humanities", conf: "estimated" },
+      { conc: "Women, Gender, and Sexuality", pair: "Social Studies", min: 21, div: "Humanities/SS", conf: "estimated" },
+      { conc: "Theater, Dance & Media", pair: "English", min: 21, div: "Humanities", conf: "estimated" },
+      { conc: "Electrical Engineering", pair: "Engineering Sciences", min: 22, div: "STEM", conf: "estimated" },
+      { conc: "Engineering Sciences", pair: "Electrical Engineering", min: 22, div: "STEM", conf: "estimated" },
+      { conc: "Env. Science and Engineering", pair: "Engineering Sciences", min: 22, div: "STEM", conf: "estimated" },
+      { conc: "Folklore and Mythology", pair: "Comparative Literature", min: 22, div: "Humanities", conf: "estimated" },
+      { conc: "Music", pair: "Folklore and Mythology", min: 22, div: "Humanities", conf: "estimated" },
+      { conc: "Special Concentrations", pair: "Applied Mathematics", min: 22, div: "Other", conf: "estimated" },
+      { conc: "Mechanical Engineering", pair: "Engineering Sciences", min: 23, div: "STEM", conf: "estimated" },
+    ];
+
+    const divColors = {
+      "STEM": { bg: "#3b82f6", light: "#dbeafe", text: "#1e40af" },
+      "Humanities": { bg: "#8b5cf6", light: "#ede9fe", text: "#5b21b6" },
+      "Social Sci": { bg: "#f59e0b", light: "#fef3c7", text: "#92400e" },
+      "Humanities/SS": { bg: "#a855f7", light: "#f3e8ff", text: "#6b21a8" },
+      "Other": { bg: "#6b7280", light: "#f3f4f6", text: "#374151" },
+    };
+
+    function App() {
+      const [filter, setFilter] = useState("All");
+      const [sortBy, setSortBy] = useState("courses");
+      const [hoveredIdx, setHoveredIdx] = useState(null);
+
+      const filtered = filter === "All" ? data : data.filter(d => d.div === filter || (filter === "Humanities" && d.div === "Humanities/SS"));
+
+      const sorted = [...filtered].sort((a, b) => {
+        if (sortBy === "courses") return a.min - b.min || a.conc.localeCompare(b.conc);
+        return a.conc.localeCompare(b.conc);
+      });
+
+      const maxCourses = 23;
+      const barMaxWidth = 280;
+
+      return (
+        <div style={{ fontFamily: "system-ui, -apple-system, sans-serif", maxWidth: 820, margin: "0 auto", padding: "16px 12px" }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 4px", color: "#111" }}>
+            Harvard Concentration Double-Major: Minimum Courses per Closest Pair
+          </h2>
+          <p style={{ fontSize: 12, color: "#666", margin: "0 0 12px", lineHeight: 1.4 }}>
+            Theoretical minimum unique courses to satisfy both concentrations simultaneously. Based on 2025-2026 Fields of Concentration handbook. Ignores double-counting policies.
+          </p>
+
+          <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap", alignItems: "center" }}>
+            <span style={{ fontSize: 11, color: "#888", marginRight: 4 }}>Filter:</span>
+            {["All", "STEM", "Humanities", "Social Sci"].map(f => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                style={{
+                  padding: "3px 10px", fontSize: 11, borderRadius: 12, cursor: "pointer",
+                  border: filter === f ? "2px solid #333" : "1px solid #ccc",
+                  background: filter === f ? "#f0f0f0" : "#fff",
+                  fontWeight: filter === f ? 600 : 400,
+                }}
+              >{f}</button>
+            ))}
+            <span style={{ fontSize: 11, color: "#888", marginLeft: 12, marginRight: 4 }}>Sort:</span>
+            {[["courses", "By courses"], ["alpha", "A-Z"]].map(([val, label]) => (
+              <button
+                key={val}
+                onClick={() => setSortBy(val)}
+                style={{
+                  padding: "3px 10px", fontSize: 11, borderRadius: 12, cursor: "pointer",
+                  border: sortBy === val ? "2px solid #333" : "1px solid #ccc",
+                  background: sortBy === val ? "#f0f0f0" : "#fff",
+                  fontWeight: sortBy === val ? 600 : 400,
+                }}
+              >{label}</button>
+            ))}
+          </div>
+
+          <div style={{ display: "flex", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
+            {Object.entries(divColors).filter(([k]) => k !== "Other").map(([div, c]) => (
+              <div key={div} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <div style={{ width: 10, height: 10, borderRadius: 2, background: c.bg }} />
+                <span style={{ fontSize: 10, color: "#666" }}>{div}</span>
+              </div>
+            ))}
+            <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: 8 }}>
+              <div style={{ width: 10, height: 10, borderRadius: 2, background: "#fff", border: "2px solid #3b82f6" }} />
+              <span style={{ fontSize: 10, color: "#666" }}>Verified (course-by-course)</span>
+            </div>
+          </div>
+
+          <div style={{ fontSize: 11 }}>
+            {sorted.map((d, i) => {
+              const c = divColors[d.div] || divColors.Other;
+              const barW = (d.min / maxCourses) * barMaxWidth;
+              const isHovered = hoveredIdx === i;
+              return (
+                <div
+                  key={d.conc}
+                  onMouseEnter={() => setHoveredIdx(i)}
+                  onMouseLeave={() => setHoveredIdx(null)}
+                  style={{
+                    display: "flex", alignItems: "center", padding: "3px 0",
+                    background: isHovered ? c.light : "transparent",
+                    borderRadius: 3, transition: "background 0.15s",
+                  }}
+                >
+                  <div style={{ width: 220, flexShrink: 0, textAlign: "right", paddingRight: 8, fontSize: 10.5, color: "#333", fontWeight: d.conf === "verified" ? 600 : 400 }}>
+                    {d.conc}
+                  </div>
+                  <div style={{ position: "relative", height: 18, flex: 1 }}>
+                    <div style={{
+                      width: barW, height: 16, borderRadius: 3,
+                      background: c.bg,
+                      opacity: d.conf === "verified" ? 1 : 0.65,
+                      border: d.conf === "verified" ? "2px solid " + c.text : "none",
+                      boxSizing: "border-box",
+                    }} />
+                    <span style={{
+                      position: "absolute", left: barW + 6, top: 1,
+                      fontSize: 10.5, fontWeight: 700, color: c.text,
+                    }}>
+                      {d.min}
+                    </span>
+                  </div>
+                  <div style={{ width: 200, flexShrink: 0, paddingLeft: 8, fontSize: 10, color: "#777" }}>
+                    + {d.pair}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{ marginTop: 14, padding: "8px 10px", background: "#f9fafb", borderRadius: 6, fontSize: 10, color: "#666", lineHeight: 1.5 }}>
+            <strong>Notes:</strong> "Verified" pairs (bold, solid bars) were analyzed course-by-course against handbook requirements.
+            Estimated pairs use structural analysis of requirement categories, tutorial mandates, and cross-department recognition patterns.
+            Engineering S.B. degrees (EE, ME, ESE) require 20 courses each, inflating their pair totals.
+            Range: 13 (Physics + Astrophysics) to 23 (Mechanical Engineering + Engineering Sciences).
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
